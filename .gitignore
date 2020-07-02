@@ -1,0 +1,9 @@
+.vscode/*
+!.vscode/launch.json
+
+private_key.pem
+public_key.pem
+
+vendor/*
+go.sum
+env-dev.sh
