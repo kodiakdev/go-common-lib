@@ -11,16 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type DBOperation struct {
-	dbClient     *mongo.Client
-	databaseName string
-}
-
 type IDBOperation interface {
 	InsertOne(tableName string, data interface{}) (*mongo.InsertOneResult, error)
 	FindOne(tableName string, filter, impl interface{}) (interface{}, error)
 	FindOneAndUpdate(tableName string, filter, data interface{}) (*mongo.UpdateResult, error)
 	Find(tableName string, filter, impl interface{}) (interface{}, error)
+}
+
+type DBOperation struct {
+	dbClient     *mongo.Client
+	databaseName string
+}
+
+func NewDBOperation(dbClient *mongo.Client, databaseName string) *DBOperation {
+	return &DBOperation{
+		dbClient:     dbClient,
+		databaseName: databaseName,
+	}
 }
 
 func (dbOp *DBOperation) InsertOne(tableName string, data interface{}) (*mongo.InsertOneResult, error) {
