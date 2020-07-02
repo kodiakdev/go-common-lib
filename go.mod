@@ -1,4 +1,4 @@
-module go-common-lib
+module github.com/kodiakdev/go-common-lib
 
 go 1.13
 
