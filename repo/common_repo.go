@@ -12,38 +12,60 @@ import (
 )
 
 type IDBOperation interface {
-	InsertOne(tableName string, data interface{}) (*mongo.InsertOneResult, error)
-	FindOne(tableName string, filter, impl interface{}) (interface{}, error)
-	FindOneAndUpdate(tableName string, filter, data interface{}) (*mongo.UpdateResult, error)
-	Find(tableName string, filter, impl interface{}) (interface{}, error)
+	InsertOne(data interface{}) (*mongo.InsertOneResult, error)
+	FindOne(filter, impl interface{}) (interface{}, error)
+	FindOneAndUpdate(filter, data interface{}) (*mongo.UpdateResult, error)
+	Find(filter, impl interface{}) (interface{}, error)
+	InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error)
+	FindOneAtColl(collection string, filter, impl interface{}) (interface{}, error)
+	FindOneAndUpdateAtColl(collection string, filter, data interface{}) (*mongo.UpdateResult, error)
+	FindAtColl(collection string, filter, impl interface{}) (interface{}, error)
 }
 
 type DBOperation struct {
-	dbClient     *mongo.Client
-	databaseName string
+	dbClient          *mongo.Client
+	databaseName      string
+	defaultCollection string
 }
 
-func NewDBOperation(dbClient *mongo.Client, databaseName string) *DBOperation {
+func NewDBOperation(dbClient *mongo.Client, databaseName, defaultCollection string) *DBOperation {
 	return &DBOperation{
-		dbClient:     dbClient,
-		databaseName: databaseName,
+		dbClient:          dbClient,
+		databaseName:      databaseName,
+		defaultCollection: defaultCollection,
 	}
 }
 
-func (dbOp *DBOperation) InsertOne(tableName string, data interface{}) (*mongo.InsertOneResult, error) {
+func (dbOp *DBOperation) InsertOne(data interface{}) (*mongo.InsertOneResult, error) {
+	return dbOp.InsertOneAtColl(dbOp.defaultCollection, data)
+}
+
+func (dbOp *DBOperation) FindOne(filter, impl interface{}) (interface{}, error) {
+	return dbOp.FindOneAtColl(dbOp.defaultCollection, filter, impl)
+}
+
+func (dbOp *DBOperation) FindOneAndUpdate(filter, data interface{}) (*mongo.UpdateResult, error) {
+	return dbOp.FindOneAndUpdateAtColl(dbOp.defaultCollection, filter, data)
+}
+
+func (dbOp *DBOperation) Find(filter, impl interface{}) (interface{}, error) {
+	return dbOp.FindAtColl(dbOp.defaultCollection, filter, impl)
+}
+
+func (dbOp *DBOperation) InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error) {
 	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
 	defer cf()
 
-	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(tableName)
+	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
 	inserted, err := coll.InsertOne(ctx, data)
 	return inserted, err
 }
 
-func (dbOp *DBOperation) FindOne(tableName string, filter, impl interface{}) (interface{}, error) {
+func (dbOp *DBOperation) FindOneAtColl(collection string, filter, impl interface{}) (interface{}, error) {
 	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
 	defer cf()
 
-	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(tableName)
+	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
 	res := coll.FindOne(ctx, filter)
 	if err := res.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -61,11 +83,11 @@ func (dbOp *DBOperation) FindOne(tableName string, filter, impl interface{}) (in
 	return impl, nil
 }
 
-func (dbOp *DBOperation) FindOneAndUpdate(tableName string, filter, data interface{}) (*mongo.UpdateResult, error) {
+func (dbOp *DBOperation) FindOneAndUpdateAtColl(collection string, filter, data interface{}) (*mongo.UpdateResult, error) {
 	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
 	defer cf()
 
-	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(tableName)
+	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
 	res, err := coll.UpdateOne(ctx, filter, bson.D{{"$set", data}})
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -77,10 +99,10 @@ func (dbOp *DBOperation) FindOneAndUpdate(tableName string, filter, data interfa
 	return res, nil
 }
 
-func (dbOp *DBOperation) Find(tableName string, filter, impl interface{}) (interface{}, error) {
+func (dbOp *DBOperation) FindAtColl(collection string, filter, impl interface{}) (interface{}, error) {
 	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
 	defer cf()
-	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(tableName)
+	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
 	curr, err := coll.Find(ctx, filter)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
