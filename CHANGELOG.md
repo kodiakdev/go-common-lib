@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+### Added
+- New err type unique constraint violation
+- Common auditing struct
+- New constructor and default collection name for DBOperation
+- Common repo db operation: FindAtColl, FindOneAtColl, InsertAtColl, UpdateAtColl to enable user specify custom collection
+
 ## 0.0.1-alpha.3
 ### Added
 - Common repo db operation: Find, FindOne, Insert, Update
