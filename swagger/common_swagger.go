@@ -1,6 +1,13 @@
 package commonswagger
 
-import "fmt"
+import (
+	"fmt"
+
+	commonerr "github.com/kodiakdev/go-common-lib/err"
+)
+
+var MsgDBProblem = GenerateSwaggerError(commonerr.DatabaseErrorCode, commonerr.DatabaseErrorExplanation)
+var MsgUnknownProblem = GenerateSwaggerError(commonerr.UnknownErrorCode, commonerr.UnknownErrorExplanation)
 
 //GenerateSwaggerError generate a string in a format of %d - %s
 //use it for creating sample error message in swagger page
