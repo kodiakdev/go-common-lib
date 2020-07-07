@@ -19,8 +19,15 @@ type RequestResponse struct {
 
 //ServiceErrorResponse response commonerr for non 2xx
 type ServiceErrorResponse struct {
-	Code        int    `json:"code"`
-	Explanation string `json:"explanation"`
+	Code        int                         `json:"code"`
+	Explanation string                      `json:"explanation"`
+	Causes      []ServiceErrorCauseResponse `json:"causes,omitempty"`
+}
+
+//ServiceErrorCauseResponse struct explaining error cause
+type ServiceErrorCauseResponse struct {
+	Message string `json:"message"`
+	Field   string `json:"field,omitempty"`
 }
 
 //Write perform write the response as JSON
