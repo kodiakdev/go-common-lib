@@ -19,12 +19,12 @@ import (
 type IDBOperation interface {
 	InsertOne(data interface{}) (*mongo.InsertOneResult, error)
 	FindOne(filter, impl interface{}) (interface{}, error)
-	FindOneAndUpdate(filter, data interface{}) (*mongo.UpdateResult, error)
+	FindOneAndUpdate(filter, update interface{}) (*mongo.UpdateResult, error)
 	Find(filter, impl interface{}) (interface{}, error)
 	FindPagedSorted(pagingSortingReq PagingSortingRequest, filter, impl interface{}) (interface{}, *mongopagination.PaginationData, error)
 	InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error)
 	FindOneAtColl(collection string, filter, impl interface{}) (interface{}, error)
-	FindOneAndUpdateAtColl(collection string, filter, data interface{}) (*mongo.UpdateResult, error)
+	FindOneAndUpdateAtColl(collection string, filter, update interface{}) (*mongo.UpdateResult, error)
 	FindAtColl(collection string, filter, impl interface{}) (interface{}, error)
 	FindAtCollPagedSorted(collection string, pagingSortingReq PagingSortingRequest, filter, impl interface{}) (interface{}, *mongopagination.PaginationData, error)
 }
@@ -63,8 +63,8 @@ func (dbOp *DBOperation) FindOne(filter, impl interface{}) (interface{}, error) 
 	return dbOp.FindOneAtColl(dbOp.defaultCollection, filter, impl)
 }
 
-func (dbOp *DBOperation) FindOneAndUpdate(filter, data interface{}) (*mongo.UpdateResult, error) {
-	return dbOp.FindOneAndUpdateAtColl(dbOp.defaultCollection, filter, data)
+func (dbOp *DBOperation) FindOneAndUpdate(filter, update interface{}) (*mongo.UpdateResult, error) {
+	return dbOp.FindOneAndUpdateAtColl(dbOp.defaultCollection, filter, update)
 }
 
 func (dbOp *DBOperation) Find(filter, impl interface{}) (interface{}, error) {
@@ -106,12 +106,12 @@ func (dbOp *DBOperation) FindOneAtColl(collection string, filter, impl interface
 	return impl, nil
 }
 
-func (dbOp *DBOperation) FindOneAndUpdateAtColl(collection string, filter, data interface{}) (*mongo.UpdateResult, error) {
+func (dbOp *DBOperation) FindOneAndUpdateAtColl(collection string, filter, update interface{}) (*mongo.UpdateResult, error) {
 	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
 	defer cf()
 
 	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
-	res, err := coll.UpdateOne(ctx, filter, bson.D{{"$set", data}})
+	res, err := coll.UpdateOne(ctx, filter, update)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
