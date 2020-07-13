@@ -9,6 +9,7 @@ import (
 var ErrDatabaseProblem = errors.New("dbproblem")
 var ErrUnknownProblem = errors.New("unknown")
 var ErrUniqueConstraintViolation = errors.New("uniqueconstraint")
+var ErrRecordNotFound = errors.New("recnotfound")
 
 const (
 	UnknownErrorCode                  = 1000001
