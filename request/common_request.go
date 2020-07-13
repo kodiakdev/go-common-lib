@@ -1,4 +1,8 @@
 package commonreq
 
-const PathParamTenant = "tenant"
-const PathParamUserID = "userId"
+const (
+	PathParamTenant = "tenant"
+	PathParamUserID = "userId"
+	QueryParamLimit = "limit"
+	QueryParamSort  = "sort"
+)
