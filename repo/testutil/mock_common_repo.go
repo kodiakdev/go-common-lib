@@ -34,6 +34,9 @@ func (dbOp *MockDBOperation) FindPagedSorted(pagingSortingReq commonrepo.PagingS
 
 func (dbOp *MockDBOperation) InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error) {
 	args := dbOp.Called(collection, data)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mongo.InsertOneResult), args.Error(1)
 }
 
@@ -44,6 +47,9 @@ func (dbOp *MockDBOperation) FindOneAtColl(collection string, filter, impl inter
 
 func (dbOp *MockDBOperation) FindOneAndUpdateAtColl(collection string, filter, update interface{}) (*mongo.UpdateResult, error) {
 	args := dbOp.Called(collection, filter, update)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mongo.UpdateResult), args.Error(1)
 }
 
