@@ -32,6 +32,14 @@ func (dbOp *MockDBOperation) FindPagedSorted(pagingSortingReq commonrepo.PagingS
 	return dbOp.FindAtCollPagedSorted(dbOp.defaultCollection, pagingSortingReq, filter, impl)
 }
 
+func (dbOp *MockDBOperation) Count(filter interface{}) (int64, error) {
+	return dbOp.CountAtColl(dbOp.defaultCollection, filter)
+}
+
+func (dbOp *MockDBOperation) IsExist(filter interface{}) (bool, error) {
+	return dbOp.IsExistAtColl(dbOp.defaultCollection, filter)
+}
+
 func (dbOp *MockDBOperation) InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error) {
 	args := dbOp.Called(collection, data)
 	if args.Get(0) == nil {
@@ -61,4 +69,14 @@ func (dbOp *MockDBOperation) FindAtColl(collection string, filter, impl interfac
 func (dbOp *MockDBOperation) FindAtCollPagedSorted(collection string, pagingSortingReq commonrepo.PagingSortingRequest, filter, impl interface{}) (interface{}, *mongopagination.PaginationData, error) {
 	args := dbOp.Called(collection, pagingSortingReq, filter, impl)
 	return args.Get(0), args.Get(1).(*mongopagination.PaginationData), args.Error(2)
+}
+
+func (dbOp *MockDBOperation) CountAtColl(collection string, filter interface{}) (int64, error) {
+	args := dbOp.Called(collection, filter)
+	return int64(args.Int(0)), args.Error(1)
+}
+
+func (dbOp *MockDBOperation) IsExistAtColl(collection string, filter interface{}) (bool, error) {
+	args := dbOp.Called(collection, filter)
+	return args.Bool(0), args.Error(1)
 }
