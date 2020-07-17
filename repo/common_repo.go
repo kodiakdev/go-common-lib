@@ -22,11 +22,15 @@ type IDBOperation interface {
 	FindOneAndUpdate(filter, update interface{}) (*mongo.UpdateResult, error)
 	Find(filter, impl interface{}) (interface{}, error)
 	FindPagedSorted(pagingSortingReq PagingSortingRequest, filter, impl interface{}) (interface{}, *mongopagination.PaginationData, error)
+	Count(filter interface{}) (int64, error)
+	IsExist(filter interface{}) (bool, error)
 	InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error)
 	FindOneAtColl(collection string, filter, impl interface{}) (interface{}, error)
 	FindOneAndUpdateAtColl(collection string, filter, update interface{}) (*mongo.UpdateResult, error)
 	FindAtColl(collection string, filter, impl interface{}) (interface{}, error)
 	FindAtCollPagedSorted(collection string, pagingSortingReq PagingSortingRequest, filter, impl interface{}) (interface{}, *mongopagination.PaginationData, error)
+	CountAtColl(collection string, filter interface{}) (int64, error)
+	IsExistAtColl(collection string, filter interface{}) (bool, error)
 }
 
 //PagingSortingRequest specify paging and sorting mechanism
@@ -73,6 +77,14 @@ func (dbOp *DBOperation) Find(filter, impl interface{}) (interface{}, error) {
 
 func (dbOp *DBOperation) FindPagedSorted(pagingSortingReq PagingSortingRequest, filter, impl interface{}) (interface{}, *mongopagination.PaginationData, error) {
 	return dbOp.FindAtCollPagedSorted(dbOp.defaultCollection, pagingSortingReq, filter, impl)
+}
+
+func (dbOp *DBOperation) Count(filter interface{}) (int64, error) {
+	return dbOp.CountAtColl(dbOp.defaultCollection, filter)
+}
+
+func (dbOp *DBOperation) IsExist(filter interface{}) (bool, error) {
+	return dbOp.IsExistAtColl(dbOp.defaultCollection, filter)
 }
 
 func (dbOp *DBOperation) InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error) {
@@ -170,6 +182,27 @@ func (dbOp *DBOperation) FindAtCollPagedSorted(collection string, pagingSortingR
 	}
 
 	return impl, &paginatedData.Pagination, nil
+}
+
+func (dbOp *DBOperation) CountAtColl(collection string, filter interface{}) (int64, error) {
+	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
+	defer cf()
+	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
+	counter, err := coll.CountDocuments(ctx, filter)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return 0, nil
+		}
+		return 0, err
+	}
+	return counter, nil
+}
+func (dbOp *DBOperation) IsExistAtColl(collection string, filter interface{}) (bool, error) {
+	exist, err := dbOp.CountAtColl(collection, filter)
+	if err != nil {
+		return false, err
+	}
+	return (exist > 0), nil
 }
 
 //decodeBsonRaws iterate the bson.Raw array and decode to impl
