@@ -3,7 +3,7 @@ package commonresp
 import (
 	"net/http"
 
-	commonerr "github.com/kodiakdev/go-common-lib/err"
+	commondto "github.com/kodiakdev/go-common-lib/dto"
 
 	"github.com/emicklei/go-restful"
 	"github.com/sirupsen/logrus"
@@ -45,16 +45,16 @@ func write(comm *RequestResponse) {
 func RespondRequestParsingFail(err error, req *restful.Request, resp *restful.Response) {
 	logrus.Warnf("Failed to read entity. Error: %v", err)
 	errorResponseBody := ServiceErrorResponse{
-		Code:        commonerr.FailedParseRequestBodyCode,
-		Explanation: commonerr.FailedParseRequestBodyExplanation,
+		Code:        commondto.FailedParseRequestBodyCode,
+		Explanation: commondto.FailedParseRequestBodyExplanation,
 	}
 	Respond(errorResponseBody, http.StatusBadRequest, req, resp)
 }
 
 func RespondDatabaseError(err error, req *restful.Request, resp *restful.Response) {
 	errorResponseBody := ServiceErrorResponse{
-		Code:        commonerr.DatabaseErrorCode,
-		Explanation: commonerr.DatabaseErrorExplanation,
+		Code:        commondto.DatabaseErrorCode,
+		Explanation: commondto.DatabaseErrorExplanation,
 	}
 	Respond(errorResponseBody, http.StatusInternalServerError, req, resp)
 }
@@ -62,8 +62,8 @@ func RespondDatabaseError(err error, req *restful.Request, resp *restful.Respons
 func RespondUnknownError(err error, req *restful.Request, resp *restful.Response) {
 	logrus.Errorf("Error occured with unknown reason. Error: %v", err)
 	errorResponseBody := ServiceErrorResponse{
-		Code:        commonerr.UnknownErrorCode,
-		Explanation: commonerr.UnknownErrorExplanation,
+		Code:        commondto.UnknownErrorCode,
+		Explanation: commondto.UnknownErrorExplanation,
 	}
 	Respond(errorResponseBody, http.StatusInternalServerError, req, resp)
 }

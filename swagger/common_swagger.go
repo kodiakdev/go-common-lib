@@ -3,11 +3,11 @@ package commonswagger
 import (
 	"fmt"
 
-	commonerr "github.com/kodiakdev/go-common-lib/err"
+	commondto "github.com/kodiakdev/go-common-lib/dto"
 )
 
-var MsgDBProblem = GenerateSwaggerError(commonerr.DatabaseErrorCode, commonerr.DatabaseErrorExplanation)
-var MsgUnknownProblem = GenerateSwaggerError(commonerr.UnknownErrorCode, commonerr.UnknownErrorExplanation)
+var MsgDBProblem = GenerateSwaggerError(commondto.DatabaseErrorCode, commondto.DatabaseErrorExplanation)
+var MsgUnknownProblem = GenerateSwaggerError(commondto.UnknownErrorCode, commondto.UnknownErrorExplanation)
 
 //GenerateSwaggerError generate a string in a format of %d - %s
 //use it for creating sample error message in swagger page
