@@ -7,6 +7,7 @@
 - New constructor and default collection name for DBOperation
 - Common repo db operation: FindAtColl, FindOneAtColl, InsertAtColl, UpdateAtColl to enable user specify custom collection
 - Suppport for pagination and sort in common repo
+- Parser and validator for Basic authentication
 
 ## 0.0.1-alpha.3
 ### Added
