@@ -14,4 +14,6 @@ const (
 	DatabaseErrorExplanation          = "Error occured during read/write database"
 	FeatureNotAvailableCode           = 1099004
 	FeatureNotAvailableExplanation    = "Feature not available yet"
+	IncompleteInputCode               = 1099005
+	IncompleteInputExplanation        = "At least one mandatory input not provided. Check API documentation!"
 )
