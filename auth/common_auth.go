@@ -12,6 +12,7 @@ const (
 	RequesterUserID = "requesterUserId"
 )
 
+//ExtractRequesterID extract userID from token
 func ExtractRequesterID(req *restful.Request) primitive.ObjectID {
 	iUserID := req.Attribute(RequesterUserID)
 	userID := fmt.Sprintf("%v", iUserID)

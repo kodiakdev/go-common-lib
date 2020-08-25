@@ -18,6 +18,7 @@ import (
 
 type IDBOperation interface {
 	InsertOne(data interface{}) (*mongo.InsertOneResult, error)
+	InsertMany(data []interface{}) (*mongo.InsertManyResult, error)
 	FindOne(filter, impl interface{}) (interface{}, error)
 	FindOneAndUpdate(filter, update interface{}) (*mongo.UpdateResult, error)
 	Find(filter, impl interface{}) (interface{}, error)
@@ -25,6 +26,7 @@ type IDBOperation interface {
 	Count(filter interface{}) (int64, error)
 	IsExist(filter interface{}) (bool, error)
 	InsertOneAtColl(collection string, data interface{}) (*mongo.InsertOneResult, error)
+	InsertManyAtColl(collection string, data []interface{}) (*mongo.InsertManyResult, error)
 	FindOneAtColl(collection string, filter, impl interface{}) (interface{}, error)
 	FindOneAndUpdateAtColl(collection string, filter, update interface{}) (*mongo.UpdateResult, error)
 	FindAtColl(collection string, filter, impl interface{}) (interface{}, error)
@@ -63,6 +65,10 @@ func (dbOp *DBOperation) InsertOne(data interface{}) (*mongo.InsertOneResult, er
 	return dbOp.InsertOneAtColl(dbOp.defaultCollection, data)
 }
 
+func (dbOp *DBOperation) InsertMany(data []interface{}) (*mongo.InsertManyResult, error) {
+	return dbOp.InsertManyAtColl(dbOp.defaultCollection, data)
+}
+
 func (dbOp *DBOperation) FindOne(filter, impl interface{}) (interface{}, error) {
 	return dbOp.FindOneAtColl(dbOp.defaultCollection, filter, impl)
 }
@@ -93,6 +99,15 @@ func (dbOp *DBOperation) InsertOneAtColl(collection string, data interface{}) (*
 
 	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
 	inserted, err := coll.InsertOne(ctx, data)
+	return inserted, err
+}
+
+func (dbOp *DBOperation) InsertManyAtColl(collection string, data []interface{}) (*mongo.InsertManyResult, error) {
+	ctx, cf := context.WithTimeout(context.TODO(), 30*time.Second)
+	defer cf()
+
+	coll := dbOp.dbClient.Database(dbOp.databaseName).Collection(collection)
+	inserted, err := coll.InsertMany(ctx, data)
 	return inserted, err
 }
 

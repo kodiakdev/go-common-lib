@@ -16,6 +16,10 @@ func (dbOp *MockDBOperation) InsertOne(data interface{}) (*mongo.InsertOneResult
 	return dbOp.InsertOneAtColl(dbOp.defaultCollection, data)
 }
 
+func (dbOp *MockDBOperation) InsertMany(data []interface{}) (*mongo.InsertManyResult, error) {
+	return dbOp.InsertManyAtColl(dbOp.defaultCollection, data)
+}
+
 func (dbOp *MockDBOperation) FindOne(filter, impl interface{}) (interface{}, error) {
 	return dbOp.FindOneAtColl(dbOp.defaultCollection, filter, impl)
 }
@@ -46,6 +50,14 @@ func (dbOp *MockDBOperation) InsertOneAtColl(collection string, data interface{}
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*mongo.InsertOneResult), args.Error(1)
+}
+
+func (dbOp *MockDBOperation) InsertManyAtColl(collection string, data []interface{}) (*mongo.InsertManyResult, error) {
+	args := dbOp.Called(collection, data)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*mongo.InsertManyResult), args.Error(1)
 }
 
 func (dbOp *MockDBOperation) FindOneAtColl(collection string, filter, impl interface{}) (interface{}, error) {
