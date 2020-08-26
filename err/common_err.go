@@ -11,6 +11,8 @@ var ErrUnknownProblem = errors.New("unknown")
 var ErrUniqueConstraintViolation = errors.New("uniqueconstraint")
 var ErrRecordNotFound = errors.New("recnotfound")
 var ErrNotImplementedYet = errors.New("notimplementedyet")
+// ErrInvalidRequest should be thrown when input from api is not valid
+var ErrInvalidRequest = errors.New("invalidreq")
 
 //IsDuplicateErr check if err is a mongodb duplication error
 //duplication error happens in column with unique constraint

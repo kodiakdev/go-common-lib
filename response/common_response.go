@@ -68,6 +68,15 @@ func RespondIncompleteInput(err error, req *restful.Request, resp *restful.Respo
 	Respond(errorResponseBody, http.StatusBadRequest, req, resp)
 }
 
+func RespondBadInput(err error, req *restful.Request, resp *restful.Response, causes ...ServiceErrorCauseResponse) {
+	errorResponseBody := ServiceErrorResponse{
+		Code:        commondto.InvalidInputCode,
+		Explanation: commondto.InvalidInputExplanation,
+		Causes:      causes,
+	}
+	Respond(errorResponseBody, http.StatusBadRequest, req, resp)
+}
+
 func RespondUnknownError(err error, req *restful.Request, resp *restful.Response) {
 	logrus.Errorf("Error occured with unknown reason. Error: %v", err)
 	errorResponseBody := ServiceErrorResponse{

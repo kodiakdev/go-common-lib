@@ -16,4 +16,6 @@ const (
 	FeatureNotAvailableExplanation    = "Feature not available yet"
 	IncompleteInputCode               = 1099005
 	IncompleteInputExplanation        = "At least one mandatory input not provided. Check API documentation!"
+	InvalidInputCode                  = 1099006
+	InvalidInputExplanation           = "At least one input is not valid. Check API documentation!"
 )
